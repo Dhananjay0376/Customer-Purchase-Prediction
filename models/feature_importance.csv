@@ -1,0 +1,8 @@
+feature,importance
+Recency,0.98475593
+QuantityPerOrder,0.004715829
+Monetary,0.0037531308
+AvgPurchaseValue,0.0028196345
+UniqueProducts,0.0020096807
+DaysSinceFirstPurchase,0.0019457634
+Frequency,0.0

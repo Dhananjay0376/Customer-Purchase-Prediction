@@ -1,0 +1,8 @@
+feature,importance
+Recency,1.0
+Frequency,0.0
+Monetary,0.0
+AvgPurchaseValue,0.0
+DaysSinceFirstPurchase,0.0
+UniqueProducts,0.0
+QuantityPerOrder,0.0

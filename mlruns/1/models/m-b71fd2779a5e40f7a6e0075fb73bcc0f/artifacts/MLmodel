@@ -1,0 +1,23 @@
+artifact_path: file:D:/Deploy X/Customer-Purchase-Prediction/mlruns/1/models/m-b71fd2779a5e40f7a6e0075fb73bcc0f/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.6
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.9.0
+model_id: m-b71fd2779a5e40f7a6e0075fb73bcc0f
+model_size_bytes: 94911
+model_uuid: m-b71fd2779a5e40f7a6e0075fb73bcc0f
+prompts: null
+run_id: b404d3e343cf4fe5b76c1098cf1dd10c
+utc_time_created: '2026-02-07 02:14:10.768420'

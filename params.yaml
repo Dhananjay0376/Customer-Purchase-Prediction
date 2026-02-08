@@ -1,0 +1,60 @@
+# Pipeline Configuration Parameters
+
+data:
+  raw_data_path: data/raw/online_retail.csv
+  processed_data_path: data/processed/processed_data.csv
+  train_data_path: data/processed/train.csv
+  test_data_path: data/processed/test.csv
+  dataset_url: "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
+  test_size: 0.3
+  random_state: 42
+
+preprocessing:
+  min_quantity: 0
+  min_price: 0
+  max_price: 10000
+  recency_days: 365
+  
+feature_engineering:
+  rfm_quantiles: 4
+  features:
+    - Recency
+    - Frequency
+    - Monetary
+    - AvgPurchaseValue
+    - DaysSinceFirstPurchase
+    - UniqueProducts
+    - QuantityPerOrder
+  target_column: WillPurchase
+
+model:
+  algorithm: xgboost  # Options: random_forest, xgboost, logistic_regression
+  random_forest:
+    n_estimators: 200
+    max_depth: 15
+    min_samples_split: 3
+    min_samples_leaf: 2
+    random_state: 42
+    n_jobs: -1
+  xgboost:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    random_state: 42
+  logistic_regression:
+    max_iter: 1000
+    random_state: 42
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1_score
+    - roc_auc
+  cv_folds: 5
+
+mlflow:
+  experiment_name: "customer_purchase_prediction"
+  tracking_uri: "mlruns"
+  model_registry_name: "CustomerPurchaseModel"

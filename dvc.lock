@@ -1,0 +1,167 @@
+schema: '2.0'
+stages:
+  data_loading:
+    cmd: python src/data_loading.py
+    deps:
+    - path: src/data_loading.py
+      hash: md5
+      md5: 3c012a1a5a9d7b53fca54ba2c71b8283
+      size: 2756
+    params:
+      params.yaml:
+        data.dataset_url: 
+          https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx
+        data.raw_data_path: data/raw/online_retail.csv
+    outs:
+    - path: data/raw/online_retail.csv
+      hash: md5
+      md5: 7e64244e60747a06a4cafc8e152aa31b
+      size: 48581636
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw/online_retail.csv
+      hash: md5
+      md5: 7e64244e60747a06a4cafc8e152aa31b
+      size: 48581636
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: d046b6a72abe300120c9937d0f59099d
+      size: 5533
+    params:
+      params.yaml:
+        data.processed_data_path: data/processed/processed_data.csv
+        preprocessing:
+          min_quantity: 0
+          min_price: 0
+          max_price: 10000
+          recency_days: 365
+    outs:
+    - path: data/processed/processed_data.csv
+      hash: md5
+      md5: e977481d876f155e91d14e2f2524f00e
+      size: 235854
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/processed/processed_data.csv
+      hash: md5
+      md5: e977481d876f155e91d14e2f2524f00e
+      size: 235854
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: c75ec4bca88fc152740dd60323226086
+      size: 5032
+    params:
+      params.yaml:
+        data.random_state: 42
+        data.test_data_path: data/processed/test.csv
+        data.test_size: 0.3
+        data.train_data_path: data/processed/train.csv
+        feature_engineering:
+          rfm_quantiles: 4
+          features:
+          - Recency
+          - Frequency
+          - Monetary
+          - AvgPurchaseValue
+          - DaysSinceFirstPurchase
+          - UniqueProducts
+          - QuantityPerOrder
+          target_column: WillPurchase
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 787abdfcd6066b4b27dddcebff6c0218
+      size: 188870
+    - path: data/processed/train.csv
+      hash: md5
+      md5: aba38b72419e9f6e077f1cb1a9513092
+      size: 440124
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 3276de3dde59e527c8e2d5bb0a081803
+      size: 1103
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: aba38b72419e9f6e077f1cb1a9513092
+      size: 440124
+    - path: src/model_training.py
+      hash: md5
+      md5: 96ed858d8f5df5e3958ed1b0908e0118
+      size: 4147
+    params:
+      params.yaml:
+        feature_engineering.target_column: WillPurchase
+        mlflow:
+          experiment_name: customer_purchase_prediction
+          tracking_uri: mlruns
+          model_registry_name: CustomerPurchaseModel
+        model:
+          algorithm: xgboost
+          random_forest:
+            n_estimators: 200
+            max_depth: 15
+            min_samples_split: 3
+            min_samples_leaf: 2
+            random_state: 42
+            n_jobs: -1
+          xgboost:
+            n_estimators: 100
+            max_depth: 6
+            learning_rate: 0.1
+            random_state: 42
+          logistic_regression:
+            max_iter: 1000
+            random_state: 42
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: 97a86c19ffa456729f669c311ae2c373
+      size: 94911
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 787abdfcd6066b4b27dddcebff6c0218
+      size: 188870
+    - path: data/processed/train.csv
+      hash: md5
+      md5: aba38b72419e9f6e077f1cb1a9513092
+      size: 440124
+    - path: models/model.pkl
+      hash: md5
+      md5: 97a86c19ffa456729f669c311ae2c373
+      size: 94911
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 683aae505fc5015285df2db96c7965ba
+      size: 7872
+    params:
+      params.yaml:
+        evaluation:
+          metrics:
+          - accuracy
+          - precision
+          - recall
+          - f1_score
+          - roc_auc
+          cv_folds: 5
+        feature_engineering.target_column: WillPurchase
+    outs:
+    - path: models/confusion_matrix.png
+      hash: md5
+      md5: 3f4fc30583a5da0012e1d9e89a3ac3c9
+      size: 11679
+    - path: models/metrics.json
+      hash: md5
+      md5: f89ef4bb5d4d04e49895a36c44ed556c
+      size: 538
+    - path: models/roc_curve.png
+      hash: md5
+      md5: 91d64cfa86dac9595f2449260dbed3ef
+      size: 34788
